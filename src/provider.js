@@ -17,8 +17,10 @@ const createProvider = (initialValue, identifier) => {
     }
 
     set value(value) {
-      store.set(this, value);
-      this.dispatchEvent(new Event('context-changed'));
+      if (this.value !== value) {
+        store.set(this, value);
+        this.dispatchEvent(new Event('context-changed'));
+      }
     }
 
     get value() {
