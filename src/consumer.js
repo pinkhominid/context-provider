@@ -32,10 +32,8 @@ const contextConsumerMixin = dedupeMixin((SuperClass) => {
       return undefined;
     }
 
-    connectedCallback() {
-      if (super.connectedCallback) {
-        super.connectedCallback();
-      }
+    _discoverContextProvider() {
+      this._forgetContextProvider();
 
       this[provider] = getProvider(contextId, this);
 
@@ -44,10 +42,23 @@ const contextConsumerMixin = dedupeMixin((SuperClass) => {
       }
     }
 
-    disconnectedCallback() {
+    _forgetContextProvider() {
       if (this[provider]) {
         this[provider].removeEventListener('context-changed', this.onContextChanged);
       }
+      this[provider] = null;
+    }
+
+    connectedCallback() {
+      if (super.connectedCallback) {
+        super.connectedCallback();
+      }
+
+      this._discoverContextProvider();
+    }
+
+    disconnectedCallback() {
+      this._forgetContextProvider();
 
       if (super.disconnectedCallback) {
         super.disconnectedCallback();
